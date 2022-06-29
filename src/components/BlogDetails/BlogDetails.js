@@ -32,7 +32,7 @@ const BlogDetails = () => {
           <Typography variant="h4" className="blog-details-heading img-fluid img-part">
             <img src={matchedBlog?.imgUrl}/>
           </Typography>
-          <Typography variant="body1">{matchedBlog?.content}</Typography>
+          <Typography variant="body1"> <div dangerouslySetInnerHTML={{ __html:  matchedBlog?.content }}></div></Typography>
         </Box>
         <Box className="horizontal-line"></Box>
         <Box className="read-more-return-to-blog-container">

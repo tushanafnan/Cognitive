@@ -123,7 +123,7 @@ const Blog = () => {
                             variant="body2"
                             className="blog-article-description"
                           >
-                            {content.slice(0, 300) + "..."}
+                           <div dangerouslySetInnerHTML={{ __html: content.slice(0, 300) + "..." }}></div>
                           </Typography>
                         </Box>
                         <Box className="blog-article-right-part blog-article-part">

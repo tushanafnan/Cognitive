@@ -103,6 +103,12 @@ const Navigation = () => {
             >
               <MenuItem onClick={handleClose}>
                 {" "}
+                <Link className="sub-menu-link" to={ROUTES.GetYourReport}>
+                  Get Your Report{" "}
+                </Link>{" "}
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                {" "}
                 <Link className="sub-menu-link" to={ROUTES.ACCOUNT}>
                   Profile{" "}
                 </Link>{" "}
