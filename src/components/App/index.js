@@ -27,6 +27,7 @@ import PostBlog from "../Blog/PostBlog";
 import Account from "../Account";
 import Billing from "../Billing/Billing";
 import Legal from "../Legal/Legal"
+import Reports from "../Reports/Reports"
 const App = () => (
   <Context>
     <Router>
@@ -57,6 +58,9 @@ const App = () => (
         </PrivateRoute>
         <PrivateRoute path={ROUTES.GetYourReport}>
           <GetYourReport></GetYourReport>
+        </PrivateRoute>
+        <PrivateRoute path={ROUTES.Reports}>
+          <Reports></Reports>
         </PrivateRoute>
         <PrivateRoute path="/Billing">
           <Billing></Billing>

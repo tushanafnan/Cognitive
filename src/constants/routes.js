@@ -14,3 +14,4 @@ export const Contact = "/Contact";
 export const PostBlog = "/PostBlog";
 export const Billing = "/Billing";
 export const Legal = "/Legal"
+export const Reports = "/Reports"

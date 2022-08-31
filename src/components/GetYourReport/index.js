@@ -78,16 +78,16 @@ class GetYourReport extends Component {
       this.state.genoTypes.map((genoTypeMap) => {
         if (
           String(dictMap.key[0]).toLowerCase() ==
-            String(genoTypeMap.SNP).toLowerCase() &&
+          String(genoTypeMap.SNP).toLowerCase() &&
           dictMap.value == genoTypeMap.Alleles
         ) {
           this.state.genotypeDescription.push(genoTypeMap.GenotypeDescription);
           this.state.genotypeCitations.push(
             genoTypeMap.Citation1 +
-              genoTypeMap.Citation2 +
-              genoTypeMap.Citation3 +
-              genoTypeMap.Citation4 +
-              genoTypeMap.Citation5
+            genoTypeMap.Citation2 +
+            genoTypeMap.Citation3 +
+            genoTypeMap.Citation4 +
+            genoTypeMap.Citation5
           );
           this.state.genotypeSnps.push(dictMap.key);
           this.state.Alleles.push(genoTypeMap.Alleles);
@@ -154,7 +154,7 @@ class GetYourReport extends Component {
                           <input
                             className="file-field"
                             type="file"
-                            
+
                             onChange={this.handleFileChange}
                           />
                         </div>
@@ -166,7 +166,7 @@ class GetYourReport extends Component {
             </div>
           )}
 
-          {/*  {
+          {
             //Report
             <MaterialContainer maxWidth="md" component="main">
               <Box
@@ -229,7 +229,7 @@ class GetYourReport extends Component {
                 ))}
               </Grid>
             </MaterialContainer>
-          } */}
+          }
         </div>
 
         <div className="mt-5">
