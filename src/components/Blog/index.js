@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./blog.css";
-
 import { Container, Typography, Grid, Box } from "@material-ui/core";
 import { Button } from "@mui/material";
 import database from "../firedb";
@@ -16,7 +15,7 @@ const Blog = () => {
   const handleOnChange = (e) => {
     const isChecked = e.target.checked;
     if (!isChecked) {
-      const newKeyword = checked.filter((item) => item != e.target.value);
+      const newKeyword = checked.filter((item) => item !== e.target.value);
       setChecked(newKeyword);
     } else {
       const newKeyword = [...checked, e.target.value];

@@ -51,8 +51,7 @@ const PostBlog = () => {
       }
     );
   };
-
-
+  
   // --------- Image Part End ----------
 
   const handleOnClick = (url) => {
@@ -115,11 +114,11 @@ const PostBlog = () => {
     color: "black",
     backgroundColor: "white",
     border: "1px solid",
-    height:"200px",
-    // scrollBehaviour: "smooth"
+    height: "200px",
+
   };
 
-  /* Note: if user fill the contact form his/her details will be stored in firebase data base. Collection name is Blog. */
+
   return (
     <div className="postBlog-main-container">
       <form onSubmit={handleUpload}>
@@ -150,8 +149,8 @@ const PostBlog = () => {
                   placeholder="Your Blog Title"
                   className="common-input-field name-field"
                   onChange={(e) => setTitle(e.target.value)}
-                /> <br /> <br /> 
-               
+                /> <br /> <br />
+
                 {/* <input
                     type="text"
                     required
@@ -161,12 +160,12 @@ const PostBlog = () => {
                     className="common-input-field email-field "
                     onChange={(e) => setContent(e.target.value)}
                   /> */}
-               
-      
 
-       <ReactQuill
-                required
-                scrollable
+
+
+                <ReactQuill
+                  required
+                  scrollable
                   theme="snow"
                   placeholder="Your Blog Content"
                   modules={modules}
@@ -175,8 +174,8 @@ const PostBlog = () => {
                   value={content}
                   onChange={setContent}
                 /><br /> <br />
-                
-               
+
+
                 <input
                   required
                   type="text"
