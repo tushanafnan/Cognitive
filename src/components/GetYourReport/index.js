@@ -18,8 +18,6 @@ import Tooltip from "@mui/material/Tooltip";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import CircularProgress from '@mui/material/CircularProgress';
 import Footer from "../Footer/Footer";
-import database from "../firedb";
-
 class GetYourReport extends Component {
   constructor(props) {
     super(props);
@@ -68,36 +66,21 @@ class GetYourReport extends Component {
   };
   componentDidMount() {
     this.setState({ loading: true });
-
-    if (localStorage.getItem("data")) {
+    this.props.firebase.snps().on("value", (snapshot) => {
       this.setState({
-        genoTypes: JSON.parse(localStorage.getItem("data")),
+        genoTypes: snapshot.val(),
         loading: false,
       });
-    } else {
-      this.props.firebase.snps().on("value", (snapshot) => {
-        localStorage.setItem("data", JSON.stringify(snapshot.val()));
-      });
-    }
+    });
   }
-
-  comparingData() {
-    let status = false;
-    const dataToSave = [];
+  findGenoTypeDescription() {
     this.state.dict.map((dictMap) =>
-      this.state.genoTypes.map((genoTypeMap, index) => {
+      this.state.genoTypes.map((genoTypeMap) => {
         if (
           String(dictMap.key[0]).toLowerCase() ==
           String(genoTypeMap.SNP).toLowerCase() &&
           dictMap.value == genoTypeMap.Alleles
         ) {
-          status = true;
-          dataToSave[index] = {
-            GenotypeDescription: genoTypeMap.GenotypeDescription,
-            genotypeCitations: genoTypeMap.Citation1 + genoTypeMap.Citation2 + genoTypeMap.Citation3 + genoTypeMap.Citation4 + genoTypeMap.Citation5,
-            genotypeSnps: dictMap.key[0],
-            Alleles: genoTypeMap.Alleles
-          }
           this.state.genotypeDescription.push(genoTypeMap.GenotypeDescription);
           this.state.genotypeCitations.push(
             genoTypeMap.Citation1 +
@@ -111,38 +94,8 @@ class GetYourReport extends Component {
         }
       })
     );
-
-    if (status) {
-      this.state.visible = false;
-      database.ref("Reports").push({
-        user: localStorage.getItem("user"),
-        data: dataToSave,
-        fileName: this.state.fileName
-      });
-    } else {
-      alert("nothing found to show");
-    }
+    this.state.visible = false;
   }
-
-  findGenoTypeDescription() {
-    database.ref("Reports").get().then((snapshot) => {
-      if (snapshot.exists()) {
-        Object.values(snapshot.val()).filter(d => d.user === localStorage.getItem("user")).map( val =>   {
-          if (val.fileName === this.state.fileName) {
-            console.log(val);
-            alert("change your file name!");
-          } else {
-            this.comparingData();
-          }
-        })
-      } else {
-        this.comparingData();
-      }
-    }).catch((error) => {
-      console.error(error);
-    });
-  }
-
   render() {
     return (
       <>
@@ -155,7 +108,7 @@ class GetYourReport extends Component {
                   style={{ width: "100%", height: "100vh" }}
                 >
                   <div
-                    className="pic2getYourReport"
+                    class="pic2getYourReport"
                     style={{ width: "100%", height: "100%" }}
                   >
                     <div className="get-report-inner-container">
@@ -228,7 +181,6 @@ class GetYourReport extends Component {
               </Box>
               <Grid container spacing={5} alignItems="flex-end">
                 {this.state.genotypeDescription.map((item, index) => (
-                  // data paisi state.genotypeDescription array
                   // Enterprise card is full width at sm breakpoint
                   <Grid item xs={12} sm={6} md={4}>
                     <MaterialCard

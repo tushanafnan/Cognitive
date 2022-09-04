@@ -17,7 +17,7 @@ const BlogDetails = () => {
       setBlogs(Blogs);
     });
   }, []);
-  const matchedBlog = blogs.find((blog) => blog.id === blogId);
+  const matchedBlog = blogs.find((blog) => blog.id == blogId);
 
   return (
     <div className="blogDetails-main-container">

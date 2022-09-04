@@ -2,8 +2,12 @@ import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import database from "../firedb";
+import { useHistory } from 'react-router-dom';
+import { Box } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
 const Reports = () => {
+  const history = useHistory();
     const [report, setReport] = useState([]);
 
     useEffect(() => {
@@ -14,13 +18,30 @@ const Reports = () => {
           setReport(Reports);
         });
       }, []);
+      const handleShowReportDetails = (fileName) => {
+        history.push(`/reportdetails/${fileName}`);
+      };
     return (
-        <div>
+       <div>
             {Object.values(report).map((report, index) => {
-                  const { fileName } = report;
-                  return ( <h2>{fileName}</h2>);
-            })};
-        </div>
+                  const {  fileName } = report;
+                  return (
+                    
+                    <Box className="blog-article-right-part blog-article-part" key={fileName}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => {
+                        handleShowReportDetails(fileName);
+                      }}
+                    >
+                     {fileName}
+                    </Button>
+                    </Box>
+                    
+                    )})}
+            
+            </div>
     );
 };
 

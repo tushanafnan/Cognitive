@@ -7,7 +7,7 @@ import SignUpPage from "../SignUp";
 import SignInPage from "../SignIn";
 import PasswordForgetPage from "../PasswordForget";
 import Overview from "../Overview";
-import AccountPage from "../Account";
+// import AccountPage from "../Account";
 import AdminPage from "../Admin";
 import About from "../About";
 import Blog from "../Blog";
@@ -28,6 +28,7 @@ import Account from "../Account";
 import Billing from "../Billing/Billing";
 import Legal from "../Legal/Legal"
 import Reports from "../Reports/Reports"
+import ReportDetails from './../Reports/ReportDetails';
 const App = () => (
   <Context>
     <Router>
@@ -42,6 +43,7 @@ const App = () => (
         <Route path={ROUTES.Overview} component={Overview} />
         <Route path={ROUTES.Blog} component={Blog} />
         <Route path={ROUTES.BlogDetails} component={BlogDetails} />
+        <Route path={ROUTES.ReportDetails} component={ReportDetails} />
         <Route path={ROUTES.Contact} component={Contact} />
         <Route path={ROUTES.Legal} component={Legal} />
         <Route exact path="/" >
@@ -49,6 +51,9 @@ const App = () => (
            </Route>
         <PrivateRoute path="/ServiceDetails/:ServiceId">
           <ServiceDetails></ServiceDetails>
+        </PrivateRoute>
+        <PrivateRoute path="/ReportDetails/:reportId">
+        <ReportDetails></ReportDetails>
         </PrivateRoute>
         <PrivateRoute path="/blogPost">
           <PostBlog />
