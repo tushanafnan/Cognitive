@@ -1,11 +1,20 @@
 /* eslint-disable eqeqeq */
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import MaterialContainer from "@mui/material/Container";
 import { useParams } from "react-router-dom";
 import database from "../firedb";
 import Footer from './../Footer/Footer';
+import Box from "@mui/material/Box";
+import MaterialCard from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import MaterialContainer from "@mui/material/Container";
+import Avatar from "@material-ui/core/Avatar";
+import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 
 const ReportDetails = () => {
   const { reportId } = useParams();
@@ -23,16 +32,81 @@ const ReportDetails = () => {
 
   return (
     <div>
-
-      <div style={{color:"red"}}>
-        <h4> Alleles:{matchedReport?.data.map(data => <div>{data.Alleles}</div>)}</h4>
-        <h4> Description:{matchedReport?.data.map(data => <div>{data.GenotypeDescription}</div>)}</h4>
-        <h4> Citations:{matchedReport?.data.map(data => <div>{data.genotypeCitations}</div>)}</h4>
-        <h4> SNP:{matchedReport?.data.map(data => <div>{data.genotypeSnps}</div>)}</h4>
+      <div >
+        <MaterialContainer maxWidth="md" component="main" >
+          <Box
+            sx={
+              {
+                width: "100%",
+                padding: "20px",
+              }
+            } >
+            <Typography variant="h1"
+              style={
+                { color: "#032E54" }} >
+              Cognitive Report </Typography> </Box>
+          <Grid container spacing={5}
+            alignItems="flex-end" >
+            {matchedReport?.data.map((data) => (
+              <Grid item xs={12}
+                sm={6}
+                md={4} >
+                <MaterialCard sx={
+                  {
+                    minHeight: "500px",
+                    display: "flex",
+                    flexDirection: "column",
+                  }
+                }>
+                  <CardHeader title={
+                    String(
+                      data?.genotypeSnps
+                    ).toUpperCase()
+                  }
+                    titleTypographyProps={
+                      { align: "left" }}
+                    sx={
+                      {
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === "light" ?
+                            theme.palette.grey[200] :
+                            theme.palette.grey[700],
+                      }
+                    }
+                    action={<Stack direction="row"
+                      spacing={2} >
+                      < Avatar style={
+                        { backgroundColor: "#08C5B6" }} >
+                        {data?.Alleles
+                          .replace(/[^a-z]/gi, "")
+                          .slice(0, 1)
+                        } </Avatar> < Avatar style={
+                          { backgroundColor: "#545454" }} > {data?.Alleles
+                            .replace(/[^a-z]/gi, "")
+                            .slice(1, 2)
+                        } </Avatar>
+                    </Stack>
+                    }
+                  />
+                  < CardContent>
+                    <ul > {data?.item} </ul> <Tooltip title={data?.genotypeCitations} >
+                      <IconButton >
+                        <FormatQuoteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </CardContent>
+                  < CardContent>
+                    {data?.GenotypeDescription}
+                  </CardContent>
+                </MaterialCard>
+              </Grid>
+            ))}
+          </Grid>
+        </MaterialContainer>
       </div>
       <Footer />
     </div>
-  );
+  )
 };
 
 export default ReportDetails;
