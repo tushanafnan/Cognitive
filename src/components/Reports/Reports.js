@@ -5,6 +5,7 @@ import database from "../firedb";
 import { useHistory } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import Footer from './../Footer/Footer';
 
 const Reports = () => {
   const history = useHistory();
@@ -23,6 +24,7 @@ const Reports = () => {
       };
     return (
        <div>
+        <div>
             {Object.values(report).map((report, index) => {
                   const {  fileName } = report;
                   return (
@@ -40,7 +42,8 @@ const Reports = () => {
                     </Box>
                     
                     )})}
-            
+                    </div>
+            <Footer/>
             </div>
     );
 };

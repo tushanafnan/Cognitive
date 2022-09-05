@@ -52,9 +52,6 @@ const App = () => (
         <PrivateRoute path="/ServiceDetails/:ServiceId">
           <ServiceDetails></ServiceDetails>
         </PrivateRoute>
-        <PrivateRoute path="/ReportDetails/:reportId">
-        <ReportDetails></ReportDetails>
-        </PrivateRoute>
         <PrivateRoute path="/blogPost">
           <PostBlog />
         </PrivateRoute>

@@ -1,22 +1,11 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from "react";
 import { withFirebase } from "../Firebase";
-import LinearProgress from '@mui/material/LinearProgress';
 import "bootstrap/dist/css/bootstrap.min.css";
-import getyourreport2 from "../Files/getyourreport2.png";
 import "./getyourreport.css";
-import Box from "@mui/material/Box";
-import MaterialCard from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import MaterialContainer from "@mui/material/Container";
-import Avatar from "@material-ui/core/Avatar";
-import Stack from "@mui/material/Stack";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import CircularProgress from '@mui/material/CircularProgress';
+import database from '../firedb'
 import Footer from "../Footer/Footer";
 class GetYourReport extends Component {
   constructor(props) {
@@ -33,6 +22,7 @@ class GetYourReport extends Component {
       genotypeCitations: [],
       Alleles: [],
       visible: true,
+      isLoading: true,
     };
   }
   handleFileChange = (e) => {
@@ -57,6 +47,7 @@ class GetYourReport extends Component {
             ")",
         })
       );
+      
       this.findGenoTypeDescription();
       this.forceUpdate();
     };
@@ -73,29 +64,72 @@ class GetYourReport extends Component {
       });
     });
   }
+  refreshPage () {
+    window.location="./reports";
+ };
   findGenoTypeDescription() {
-    this.state.dict.map((dictMap) =>
-      this.state.genoTypes.map((genoTypeMap) => {
-        if (
-          String(dictMap.key[0]).toLowerCase() ==
-          String(genoTypeMap.SNP).toLowerCase() &&
-          dictMap.value == genoTypeMap.Alleles
-        ) {
-          this.state.genotypeDescription.push(genoTypeMap.GenotypeDescription);
-          this.state.genotypeCitations.push(
-            genoTypeMap.Citation1 +
-            genoTypeMap.Citation2 +
-            genoTypeMap.Citation3 +
-            genoTypeMap.Citation4 +
-            genoTypeMap.Citation5
+    const DataTOSave = [];
+    // let local = 
+    let DataTOSaveCount = 0;
+    database.ref("Reports").get().then(reports => {
+      if (reports.val() != null && Object.values(Object.values(reports.val()).find(report => report.fileName == this.state.fileName)).length > 0) {
+        alert("This data already exists in your Reports check there!")
+      } else {
+        this.state.dict.map((dictMap) =>
+          // eslint-disable-next-line array-callback-return
+          this.state.genoTypes.map((genoTypeMap) => {
+            if (
+              String(dictMap.key[0]).toLowerCase() ==
+              String(genoTypeMap.SNP).toLowerCase() &&
+              dictMap.value == genoTypeMap.Alleles
+            ) {
+              DataTOSave[DataTOSaveCount] = {
+                GenotypeDescription: genoTypeMap.GenotypeDescription,
+                genotypeCitations: genoTypeMap.Citation1 + genoTypeMap.Citation2 + genoTypeMap.Citation3 + genoTypeMap.Citation4 + genoTypeMap.Citation5,
+                genotypeSnps: dictMap.key[0],
+                Alleles: genoTypeMap.Alleles,
+              }
+              this.state.genotypeDescription.push(genoTypeMap.GenotypeDescription);
+              this.state.genotypeCitations.push(
+                genoTypeMap.Citation1 +
+                genoTypeMap.Citation2 +
+                genoTypeMap.Citation3 +
+                genoTypeMap.Citation4 +
+                genoTypeMap.Citation5
+              );
+              this.state.genotypeSnps.push(dictMap.key);
+              this.state.Alleles.push(genoTypeMap.Alleles);
+              DataTOSaveCount++;
+            }
+          })
+        )
+ // genotypeSnps: this.state.genotypeSnps,
+        if (DataTOSaveCount > 0) {
+          this.state.visible = false;
+          database.ref("Reports").push({
+            fileName: this.state.fileName,
+           
+            user: JSON.parse(localStorage.getItem("user")),
+            dataTime: Date.now().toString(),
+            data: DataTOSave
+          }).catch (
+            this.refreshPage() && this.state.isLoading == false
           );
-          this.state.genotypeSnps.push(dictMap.key);
-          this.state.Alleles.push(genoTypeMap.Alleles);
+        } else {
+          alert("This data already exists in your Reports check there!")
         }
-      })
-    );
-    this.state.visible = false;
+      }
+    }).catch(err => console.log(err.message))
+
   }
+
+
+
+ twoCalls = e => {
+  this.handleFileChange(e)
+
+}
+
   render() {
     return (
       <>
@@ -150,13 +184,15 @@ class GetYourReport extends Component {
                         >
                           Fusce ut placerat orci nulla pellentesque
                         </span>
-                        <div className="getYourreportUpload">
-                          <input
+                         <div className="getYourreportUpload">
+                         {this.isLoading == true ?  <CircularProgress/> :
+                        <input
                             className="file-field"
                             type="file"
-
-                            onChange={this.handleFileChange}
-                          />
+                          
+                            onChange={this.twoCalls}
+                           
+                          />}
                         </div>
                       </div>
                     </div>
@@ -165,76 +201,8 @@ class GetYourReport extends Component {
               </div>
             </div>
           )}
-
-          {
-            //Report
-            <MaterialContainer maxWidth="md" component="main">
-              <Box
-                sx={{
-                  width: "100%",
-                  padding: "20px",
-                }}
-              >
-                <Typography variant="h1" style={{ color: "#032E54" }}>
-                  Cognitive Report
-                </Typography>
-              </Box>
-              <Grid container spacing={5} alignItems="flex-end">
-                {this.state.genotypeDescription.map((item, index) => (
-                  // Enterprise card is full width at sm breakpoint
-                  <Grid item xs={12} sm={6} md={4}>
-                    <MaterialCard
-                      sx={{
-                        minHeight: "500px",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <CardHeader
-                        title={String(
-                          this.state.genotypeSnps[index]
-                        ).toUpperCase()}
-                        titleTypographyProps={{ align: "left" }}
-                        sx={{
-                          backgroundColor: (theme) =>
-                            theme.palette.mode === "light"
-                              ? theme.palette.grey[200]
-                              : theme.palette.grey[700],
-                        }}
-                        action={
-                          <Stack direction="row" spacing={2}>
-                            <Avatar style={{ backgroundColor: "#08C5B6" }}>
-                              {this.state.Alleles[index]
-                                .replace(/[^a-z]/gi, "")
-                                .slice(0, 1)}
-                            </Avatar>
-                            <Avatar style={{ backgroundColor: "#545454" }}>
-                              {this.state.Alleles[index]
-                                .replace(/[^a-z]/gi, "")
-                                .slice(1, 2)}
-                            </Avatar>
-                          </Stack>
-                        }
-                      />
-                      <CardContent>
-                        <ul>{item}</ul>
-                        <Tooltip title={this.state.genotypeCitations[index]}>
-                          <IconButton>
-                            <FormatQuoteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </CardContent>
-                    </MaterialCard>
-                  </Grid>
-                ))}
-              </Grid>
-            </MaterialContainer>
-          }
         </div>
-
-        <div className="mt-5">
-          <Footer />
-        </div>
+        <Footer />
       </>
     );
   }
