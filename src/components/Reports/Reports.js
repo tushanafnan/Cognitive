@@ -19,10 +19,11 @@ const Reports = () => {
       const local = JSON.parse(localStorage.getItem("user"));
       if (local == users) {
         setReport(Object.values(report));
+      } else {
+        history.push(`/GetYourReport`)
       }
-
     });
-  }, []);
+  }, [history]);
 
   const handleShowReportDetails = (fileName) => {
     history.push(`/reportdetails/${fileName}`);

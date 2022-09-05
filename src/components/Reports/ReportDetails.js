@@ -43,16 +43,17 @@ const ReportDetails = () => {
             } >
             <Typography variant="h1"
               style={
-                { color: "#032E54" }} >
-              Cognitive Report </Typography> </Box>
+                { color: "#032E54", textAlign: "center" }} >
+              Cognitive Report </Typography> <br /> <br /></Box>
           <Grid container spacing={5}
             alignItems="flex-end" >
             {matchedReport?.data.map((data) => (
-              <Grid item xs={12}
+              <Grid  style={
+                {textAlign: "center" }} item xs={12}
                 sm={6}
                 md={4} >
                 <MaterialCard sx={
-                  {
+                  { 
                     minHeight: "500px",
                     display: "flex",
                     flexDirection: "column",
