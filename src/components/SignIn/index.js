@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
-import * as ROUTES from "../../constants/routes";
 import { UserContext } from "../Context/Context";
 import { withFirebase } from "../Firebase";
 import { SignUpLink } from "../SignUp";
@@ -39,7 +38,7 @@ class SignInFormBase extends Component {
         setUser(response.user);
         this.setState({ ...INITIAL_STATE });
         this.props.history.push(
-          `${this.props.location.state.from.pathname || ROUTES.Home}`
+          `/Home`
         );
       })
       .catch((error) => {
