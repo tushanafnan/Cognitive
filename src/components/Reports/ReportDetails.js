@@ -48,8 +48,7 @@ const ReportDetails = () => {
           <Grid container spacing={5}
             alignItems="flex-end" >
             {matchedReport?.data.map((data) => (
-              <Grid  style={
-                {textAlign: "center" }} item xs={12}
+              <Grid   item xs={12}
                 sm={6}
                 md={4} >
                 <MaterialCard sx={

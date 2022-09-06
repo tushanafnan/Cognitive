@@ -4,52 +4,90 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import database from "../firedb";
 import { useHistory } from 'react-router-dom';
-import { Box } from '@material-ui/core';
-import { Button } from '@material-ui/core';
 import Footer from './../Footer/Footer';
+import { Table, Button, Container } from "react-bootstrap";
+import { Box } from '@mui/material';
+import { Typography } from '@mui/material';
 const Reports = () => {
   const history = useHistory();
   const [report, setReport] = useState([]);
-
   useEffect(() => {
     const reports = database.ref("Reports");
     reports.on("value", (snapshot) => {
       const report = snapshot.val();
-      const users = Object.values(report).map((data) => data.user);
-      const local = JSON.parse(localStorage.getItem("user"));
-      if (local == users) {
-        setReport(Object.values(report));
-      } else {
+      if (report != null) {
+        const local = JSON.parse(localStorage.getItem("user"));
+        const users = Object.values(report).map((data) => data.user == local ? data.user : null);
+        if (users[0] != null) {
+          setReport(Object.values(report));
+        }
+        else {
+          history.push(`/GetYourReport`)
+        }
+      }
+      else {
         history.push(`/GetYourReport`)
       }
     });
   }, [history]);
-
+  const deleteAllReport = () => {
+    const reports = database.ref("Reports");
+    reports.remove()
+  };
   const handleShowReportDetails = (fileName) => {
     history.push(`/reportdetails/${fileName}`);
   };
+
   return (
     <div>
       <div>
-        {Object.values(report).map((report, index) => {
-          const { fileName } = report;
-          return (
-
-            <Box className="blog-article-right-part blog-article-part" key={fileName}>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => {
-                  handleShowReportDetails(fileName);
-                }}
-              >
-                {fileName}
-              </Button>
-            </Box>
-          )
-        })}
+        <Box
+          sx={
+            {
+              width: "100%",
+              padding: "20px",
+            }
+          } >
+          <Typography variant="h1"
+            style={
+              { color: "#032E54", textAlign: "center" }} >
+            Cognitive Report </Typography>
+          <br /> <br />
+        </Box>
+        <div className="container">
+          <Container style={{ minHeight: "80vh" }}>
+            <Table responsive>
+              <thead>
+                <tr>
+                  <th className='text-center'>S/N</th>
+                  <th className='text-center'>Name</th>
+                  <th className='text-center'> Upload Date</th>
+                  <th className='text-center'> Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.values(report).map((report, index) => {
+                  const { fileName, dataTime } = report;
+                  return (
+                    <tr key={fileName}>
+                      <td className='text-center'>{index + 1} </td>
+                      <td className='text-center'>{fileName}</td>
+                      <td className='text-center'>{dataTime}</td>
+                      <td className='text-center'>
+                        <Button style={{ backgroundColor: "#032E54", marginButtom: "5px" }} onClick={() => handleShowReportDetails(fileName)}> View Report</Button> {" "} {" "}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </Table>
+            <div className='text-right'>
+              <Button style={{ backgroundColor: "#82010a" }} onClick={() => deleteAllReport()} > Delete All Reports</Button>
+            </div>
+          </Container>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };

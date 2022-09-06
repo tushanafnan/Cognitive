@@ -24,45 +24,6 @@ import MaterialButton from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Footer from "../Footer/Footer";
 import Services from "../Services/Services";
-const tiers = [
-  {
-    title: "Free",
-    price: "0",
-    description: [
-      "10 users included",
-      "2 GB of storage",
-      "Help center access",
-      "Email support",
-    ],
-    buttonText: "Get this plan",
-    buttonVariant: "outlined",
-  },
-  {
-    title: "Pro",
-    subheader: "Most popular",
-    price: "15",
-    description: [
-      "20 users included",
-      "10 GB of storage",
-      "Help center access",
-      "Priority email support",
-    ],
-    buttonText: "Get this plan",
-    buttonVariant: "outlined",
-  },
-  {
-    title: "Enterprise",
-    price: "30",
-    description: [
-      "50 users included",
-      "30 GB of storage",
-      "Help center access",
-      "Phone & email support",
-    ],
-    buttonText: "Get this plan",
-    buttonVariant: "outlined",
-  },
-];
 
 const Home = () => (
   <div>

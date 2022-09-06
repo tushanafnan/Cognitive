@@ -5,6 +5,7 @@ import { withFirebase } from "../Firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./getyourreport.css";
 import CircularProgress from '@mui/material/CircularProgress';
+import { v4 as uuidv4 } from "uuid";
 import database from '../firedb'
 import Footer from "../Footer/Footer";
 class GetYourReport extends Component {
@@ -69,10 +70,11 @@ class GetYourReport extends Component {
  };
   findGenoTypeDescription() {
     const DataTOSave = [];
-    // let local = 
+
     let DataTOSaveCount = 0;
     database.ref("Reports").get().then(reports => {
-      if (reports.val() != null && Object.values(Object.values(reports.val()).find(report => report.fileName == this.state.fileName)).length > 0) {
+      if 
+      (reports.exists()&&Object.values(reports.val()).filter(report => (report.user == JSON.parse(localStorage.getItem("user")))&&(report.fileName===this.state.fileName)).length>0) {
         alert("This data already exists in your Reports check there!")
       } else {
         this.state.dict.map((dictMap) =>
@@ -103,16 +105,17 @@ class GetYourReport extends Component {
             }
           })
         )
- // genotypeSnps: this.state.genotypeSnps,
+        console.log("data to save",DataTOSave)
         if (DataTOSaveCount > 0) {
           this.state.visible = false;
+          const today = Date.now()
           database.ref("Reports").push({
             fileName: this.state.fileName,
-           
+            id: uuidv4(),
             user: JSON.parse(localStorage.getItem("user")),
-            dataTime: Date.now().toString(),
+            dataTime:  Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(today),
             data: DataTOSave
-          }).catch (
+          }).then(() => console.log("saved data")).catch (
             this.refreshPage() && this.state.isLoading == false
           );
         } else {
