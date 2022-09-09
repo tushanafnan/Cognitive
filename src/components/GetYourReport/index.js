@@ -4,9 +4,9 @@ import React, { Component } from "react";
 import { withFirebase } from "../Firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./getyourreport.css";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import { v4 as uuidv4 } from "uuid";
-import database from '../firedb'
+import database from "../firedb";
 import Footer from "../Footer/Footer";
 class GetYourReport extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ class GetYourReport extends Component {
             ")",
         })
       );
-      
+
       this.findGenoTypeDescription();
       this.forceUpdate();
     };
@@ -65,74 +65,88 @@ class GetYourReport extends Component {
       });
     });
   }
-  refreshPage () {
-    window.location="./reports";
- };
-  findGenoTypeDescription() {
-    const DataTOSave = [];
-
-    let DataTOSaveCount = 0;
-    database.ref("Reports").get().then(reports => {
-      if 
-      (reports.exists()&&Object.values(reports.val()).filter(report => (report.user == JSON.parse(localStorage.getItem("user")))&&(report.fileName===this.state.fileName)).length>0) {
-        alert("This data already exists in your Reports check there!")
-      } else {
-        this.state.dict.map((dictMap) =>
-          // eslint-disable-next-line array-callback-return
-          this.state.genoTypes.map((genoTypeMap) => {
-            if (
-              String(dictMap.key[0]).toLowerCase() ==
-              String(genoTypeMap.SNP).toLowerCase() &&
-              dictMap.value == genoTypeMap.Alleles
-            ) {
-              DataTOSave[DataTOSaveCount] = {
-                GenotypeDescription: genoTypeMap.GenotypeDescription,
-                genotypeCitations: genoTypeMap.Citation1 + genoTypeMap.Citation2 + genoTypeMap.Citation3 + genoTypeMap.Citation4 + genoTypeMap.Citation5,
-                genotypeSnps: dictMap.key[0],
-                Alleles: genoTypeMap.Alleles,
-              }
-              this.state.genotypeDescription.push(genoTypeMap.GenotypeDescription);
-              this.state.genotypeCitations.push(
-                genoTypeMap.Citation1 +
-                genoTypeMap.Citation2 +
-                genoTypeMap.Citation3 +
-                genoTypeMap.Citation4 +
-                genoTypeMap.Citation5
-              );
-              this.state.genotypeSnps.push(dictMap.key);
-              this.state.Alleles.push(genoTypeMap.Alleles);
-              DataTOSaveCount++;
-            }
-          })
-        )
-        console.log("data to save",DataTOSave)
-        if (DataTOSaveCount > 0) {
-          this.state.visible = false;
-          const today = Date.now()
-          database.ref("Reports").push({
-            fileName: this.state.fileName,
-            id: uuidv4(),
-            user: JSON.parse(localStorage.getItem("user")),
-            dataTime:  Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(today),
-            data: DataTOSave
-          }).then(() => console.log("saved data")).catch (
-            this.refreshPage() && this.state.isLoading == false
-          );
-        } else {
-          alert("This data already exists in your Reports check there!")
-        }
-      }
-    }).catch(err => console.log(err.message))
-
+  reportsPage() {
+    window.location = "./reports";
   }
+  findGenoTypeDescription() {
+    const dataToSave = [];
+    database
+      .ref("Reports")
+      .get()
+      .then((reports) => {
+        if (
+          reports.exists() &&
+          Object.values(reports.val()).filter(
+            (report) =>
+              report.user == JSON.parse(localStorage.getItem("user")) &&
+              report.fileName === this.state.fileName
+          ).length > 0
+        ) {
+          alert("There is already a report with same filename!");
+          this.reportsPage(); //Taaking to report page if the name already exist!
+        } else {
+          this.state.dict.map((dictMap) =>
+            this.state.genoTypes.map((genoTypeMap) => {
+              if (
+                String(dictMap.key[0]).toLowerCase() ==
+                  String(genoTypeMap.SNP).toLowerCase() &&
+                dictMap.value == genoTypeMap.Alleles
+              ) {
+                //Storing data
+                dataToSave.push({
+                  GenotypeDescription: genoTypeMap.GenotypeDescription,
+                  genotypeCitations:
+                    genoTypeMap.Citation1 +
+                    genoTypeMap.Citation2 +
+                    genoTypeMap.Citation3 +
+                    genoTypeMap.Citation4 +
+                    genoTypeMap.Citation5,
+                  genotypeSnps: dictMap.key[0],
+                  Alleles: genoTypeMap.Alleles,
+                });
 
-
-
- twoCalls = e => {
-  this.handleFileChange(e)
-
-}
-
+                this.state.genotypeDescription.push(
+                  genoTypeMap.GenotypeDescription
+                );
+                this.state.genotypeCitations.push(
+                  genoTypeMap.Citation1 +
+                    genoTypeMap.Citation2 +
+                    genoTypeMap.Citation3 +
+                    genoTypeMap.Citation4 +
+                    genoTypeMap.Citation5
+                );
+                this.state.genotypeSnps.push(dictMap.key);
+                this.state.Alleles.push(genoTypeMap.Alleles);
+              }
+            })
+          );
+          this.saveData(dataToSave);
+        }
+        this.state.visible = false;
+      })
+      .catch((err) => console.log(err.message));
+  }
+  saveData(dataToSave) {
+    const today = Date.now();
+    database
+      .ref("Reports")
+      .push({
+        fileName: this.state.fileName,
+        id: uuidv4(),
+        user: JSON.parse(localStorage.getItem("user")),
+        dataTime: Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }).format(today),
+        data: dataToSave,
+      })
+      .then(() => console.log("Data is saved!!!"))
+      .catch(this.reportsPage() && this.state.isLoading == false);
+  }
   render() {
     return (
       <>
@@ -187,15 +201,16 @@ class GetYourReport extends Component {
                         >
                           Fusce ut placerat orci nulla pellentesque
                         </span>
-                         <div className="getYourreportUpload">
-                         {this.isLoading == true ?  <CircularProgress/> :
-                        <input
-                            className="file-field"
-                            type="file"
-                          
-                            onChange={this.twoCalls}
-                           
-                          />}
+                        <div className="getYourreportUpload">
+                          {this.isLoading == true ? (
+                            <CircularProgress />
+                          ) : (
+                            <input
+                              className="file-field"
+                              type="file"
+                              onChange={this.handleFileChange}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
