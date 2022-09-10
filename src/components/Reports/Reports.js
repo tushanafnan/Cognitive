@@ -8,6 +8,7 @@ import Footer from "./../Footer/Footer";
 import { Table, Button, Container } from "react-bootstrap";
 import { Box } from "@mui/material";
 import { Typography } from "@mui/material";
+import Swal from "sweetalert2";
 const Reports = () => {
   const history = useHistory();
   const [report, setReport] = useState([]);
@@ -17,8 +18,16 @@ const Reports = () => {
       if (snapshot.exists()) {
         setReport(Object.values(snapshot.val()))
       } else {
-        alert("no data available");
-        history.push(`/getyourreport`)
+        //Alert
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'No Report Found!',
+          timer: 2000,
+        }).then(() => {
+          history.push(`/getyourreport`) //Redirect to Get Your Report Page
+        })
+       
       }
     });
   }, [history]);
