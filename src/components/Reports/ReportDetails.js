@@ -21,14 +21,8 @@ const ReportDetails = () => {
   const [report, setReport] = useState([]);
 
   useEffect(() => {
-    const reports = database.ref("Reports");
-    reports.on("value", (snapshot) => {
-      const report = snapshot.val();
-      const reports = Object.values(report);
-      setReport(reports);
-    });
-  }, []);
-  const matchedReport = report.find((reports) => reports.fileName == reportId);
+    database.ref("Reports").child(JSON.parse(localStorage.getItem("user"))).child(reportId).on("value", snapshot => setReport(snapshot.val()));
+  }, [reportId]);
 
   return (
     <div>
@@ -49,7 +43,7 @@ const ReportDetails = () => {
             <br /> <br />
           </Box>
           <Grid container spacing={5} alignItems="flex-end">
-            {matchedReport?.data.map((data) => (
+            {report.data && Object.values(report.data).map((data) => (
               <Grid item xs={12} sm={6} md={4}>
                 <MaterialCard
                   sx={{
@@ -83,7 +77,7 @@ const ReportDetails = () => {
                     }
                   />
                   <CardContent>
-                    <ul> {data?.item} </ul>{" "}
+                    {/* <ul> {data?.item} </ul>{" "} */}
                     <Tooltip title={data?.genotypeCitations}>
                       <IconButton>
                         <FormatQuoteIcon />

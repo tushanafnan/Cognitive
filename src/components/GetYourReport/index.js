@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable eqeqeq */
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from "react";
@@ -5,9 +6,9 @@ import { withFirebase } from "../Firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./getyourreport.css";
 import CircularProgress from "@mui/material/CircularProgress";
-import { v4 as uuidv4 } from "uuid";
 import database from "../firedb";
 import Footer from "../Footer/Footer";
+import Swal from "sweetalert2";
 class GetYourReport extends Component {
   constructor(props) {
     super(props);
@@ -23,10 +24,11 @@ class GetYourReport extends Component {
       genotypeCitations: [],
       Alleles: [],
       visible: true,
-      isLoading: true,
+      isLoading: false,
     };
   }
   handleFileChange = (e) => {
+    this.state.isLoading = true;
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsText(file);
@@ -48,7 +50,6 @@ class GetYourReport extends Component {
             ")",
         })
       );
-
       this.findGenoTypeDescription();
       this.forceUpdate();
     };
@@ -65,31 +66,31 @@ class GetYourReport extends Component {
       });
     });
   }
-  reportsPage() {
-    window.location = "./reports";
+  reportsPage(filename = null) {
+    window.location = filename ? `./reportdetails/${filename}` : `./reports`;
   }
   findGenoTypeDescription() {
     const dataToSave = [];
     database
-      .ref("Reports")
+      .ref("Reports").child(JSON.parse(localStorage.getItem("user"))).child(this.state.fileName.split(".").slice(0, -1).join('.'))
       .get()
       .then((reports) => {
-        if (
-          reports.exists() &&
-          Object.values(reports.val()).filter(
-            (report) =>
-              report.user == JSON.parse(localStorage.getItem("user")) &&
-              report.fileName === this.state.fileName
-          ).length > 0
-        ) {
-          alert("There is already a report with same filename!");
-          this.reportsPage(); //Taaking to report page if the name already exist!
+        if (reports.exists()) {
+          // Alert 
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Report Exist!',
+            timer: 2000,
+          }).then(() => {
+            this.reportsPage(this.state.fileName.split(".").slice(0, -1).join('.')); //Redirect to Report Page
+          })
         } else {
           this.state.dict.map((dictMap) =>
             this.state.genoTypes.map((genoTypeMap) => {
               if (
                 String(dictMap.key[0]).toLowerCase() ==
-                  String(genoTypeMap.SNP).toLowerCase() &&
+                String(genoTypeMap.SNP).toLowerCase() &&
                 dictMap.value == genoTypeMap.Alleles
               ) {
                 //Storing data
@@ -110,10 +111,10 @@ class GetYourReport extends Component {
                 );
                 this.state.genotypeCitations.push(
                   genoTypeMap.Citation1 +
-                    genoTypeMap.Citation2 +
-                    genoTypeMap.Citation3 +
-                    genoTypeMap.Citation4 +
-                    genoTypeMap.Citation5
+                  genoTypeMap.Citation2 +
+                  genoTypeMap.Citation3 +
+                  genoTypeMap.Citation4 +
+                  genoTypeMap.Citation5
                 );
                 this.state.genotypeSnps.push(dictMap.key);
                 this.state.Alleles.push(genoTypeMap.Alleles);
@@ -126,15 +127,13 @@ class GetYourReport extends Component {
       })
       .catch((err) => console.log(err.message));
   }
+
   saveData(dataToSave) {
-    const today = Date.now();
+    const today = Date.now()
     database
-      .ref("Reports")
-      .push({
-        fileName: this.state.fileName,
-        id: uuidv4(),
-        user: JSON.parse(localStorage.getItem("user")),
-        dataTime: Intl.DateTimeFormat("en-US", {
+      .ref("Reports").child(JSON.parse(localStorage.getItem("user"))).child(this.state.fileName.split(".").slice(0, -1).join('.'))
+      .set({
+        dateTime: Intl.DateTimeFormat("en-US", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -143,10 +142,12 @@ class GetYourReport extends Component {
           second: "2-digit",
         }).format(today),
         data: dataToSave,
+        fileName: this.state.fileName.split(".").slice(0, -1).join('.')
+      }).then(() => {
+        this.reportsPage()
       })
-      .then(() => console.log("Data is saved!!!"))
-      .catch(this.reportsPage() && this.state.isLoading == false);
   }
+
   render() {
     return (
       <>
@@ -202,7 +203,7 @@ class GetYourReport extends Component {
                           Fusce ut placerat orci nulla pellentesque
                         </span>
                         <div className="getYourreportUpload">
-                          {this.isLoading == true ? (
+                          {this.state.isLoading == true ? (
                             <CircularProgress />
                           ) : (
                             <input

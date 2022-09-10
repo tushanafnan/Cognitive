@@ -12,14 +12,13 @@ const Reports = () => {
   const history = useHistory();
   const [report, setReport] = useState([]);
   useEffect(() => {
-    const local = JSON.parse(localStorage.getItem("user"));
-    const reports = database.ref("Reports").orderByChild("user").equalTo(local);
+    const reports = database.ref("Reports").child(JSON.parse(localStorage.getItem("user")));
     reports.on("value", (snapshot) => {
-      const report = snapshot.val();
-      if (report != null) {
-        setReport(Object.values(report));
+      if (snapshot.exists()) {
+        setReport(Object.values(snapshot.val()))
       } else {
-        history.push(`/GetYourReport`);
+        alert("no data available");
+        history.push(`/getyourreport`)
       }
     });
   }, [history]);
@@ -64,12 +63,12 @@ const Reports = () => {
               </thead>
               <tbody>
                 {Object.values(report).map((report, index) => {
-                  const { fileName, dataTime } = report;
+                  const { fileName, dateTime } = report;
                   return (
-                    <tr key={fileName}>
+                    <tr id={fileName} key={fileName}>
                       <td className="text-center">{index + 1} </td>
                       <td className="text-center">{fileName}</td>
-                      <td className="text-center">{dataTime}</td>
+                      <td className="text-center">{dateTime}</td>
                       <td className="text-center">
                         <Button
                           style={{
